@@ -8,12 +8,13 @@ ruby "3.1.2"
 gem "rails", "~> 7.0.4"
 
 gem "falcon"
-gem "grumlin"
+gem "grumlin", path: "../grumlin"
 
 gem "bootsnap", require: false
 
 group :test do
   gem "async-rspec"
+  gem "factory_bot_rails"
   gem "simplecov", require: false
 end
 
