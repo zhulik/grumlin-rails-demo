@@ -16,7 +16,6 @@ Layout/LineLength:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
-    - "*.gemspec"
 
 RSpec/NamedSubject:
   Enabled: false
@@ -37,5 +36,6 @@ Style/StringLiteralsInInterpolation:
 
 Style/SymbolArray:
   EnforcedStyle: brackets
+
 Style/WordArray:
   EnforcedStyle: brackets

@@ -13,12 +13,14 @@ gem "grumlin"
 gem "bootsnap", require: false
 
 group :development, :test do
+  gem "async-rspec"
+  gem "dead_end"
   gem "debug", platforms: [:mri, :mingw, :x64_mingw]
+  gem "rspec-rails"
 end
 
 group :development do
   gem "overcommit", require: false
-  gem "rspec-rails"
   gem "rubocop", require: false
   gem "rubocop-performance", require: false
   gem "rubocop-rails", require: false
