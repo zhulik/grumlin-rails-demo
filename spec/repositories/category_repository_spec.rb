@@ -10,7 +10,7 @@ RSpec.describe CategoryRepository do
       expect { subject }.to change { g.V.hasLabel(:category).count.next }.by 1
     end
 
-    it "returns created category with it's id" do
+    it "returns created category" do
       expect(subject.except(T.id, :created_at)).to eq(
         T.label => "category",
         name: "Some category"
