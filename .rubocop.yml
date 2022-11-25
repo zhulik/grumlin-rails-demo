@@ -18,7 +18,6 @@ Metrics/BlockLength:
     - spec/**/*_spec.rb
     - "*.gemspec"
 
-
 RSpec/NamedSubject:
   Enabled: false
 
