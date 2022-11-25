@@ -14,6 +14,7 @@ gem "bootsnap", require: false
 
 group :test do
   gem "async-rspec"
+  gem "simplecov", require: false
 end
 
 group :development, :test do

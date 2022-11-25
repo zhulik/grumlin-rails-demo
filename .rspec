@@ -1,4 +1,4 @@
 --color
 --require dead_end
---require spec_helper
+--require rails_helper
 
