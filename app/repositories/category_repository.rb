@@ -5,6 +5,16 @@ class CategoryRepository < ApplicationRepository
     self.V.hasLabel(:category)
   end
 
+  query(:all) do
+    g.categories.elementMap
+  end
+
+  query(:find, return_mode: :single) do |id|
+    g.categories
+     .hasId(id)
+     .elementMap
+  end
+
   query(:add, return_mode: :single) do |name:|
     g.addV(:category)
      .props(name:)

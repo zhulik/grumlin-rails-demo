@@ -3,8 +3,6 @@
 RSpec.describe CategoryRepository do
   let(:repository) { described_class.new }
 
-  let!(:category) { create(:category, name: "Old name") }
-
   describe "#add" do
     subject { repository.add(name: "Some category") }
 
@@ -25,6 +23,8 @@ RSpec.describe CategoryRepository do
   describe "#update" do
     subject { repository.update(category[T.id], name: "New name") }
 
+    let!(:category) { create(:category, name: "Old name") }
+
     it "updates category" do
       expect { subject }.to change { g.V(category[T.id]).elementMap.next[:name] }.from("Old name").to("New name")
     end
@@ -33,8 +33,42 @@ RSpec.describe CategoryRepository do
   describe "#drop" do
     subject { repository.drop(category[T.id]) }
 
+    let!(:category) { create(:category) }
+
     it "drops category" do
       expect { subject }.to change { g.V.hasLabel(:category).count.next }.by(-1)
+    end
+  end
+
+  describe "#all" do
+    subject { repository.all }
+
+    let!(:categories) { create_list(:category, 5) }
+
+    it "returns all categories" do
+      expect(subject).to match_array(categories)
+    end
+  end
+
+  describe "#find" do
+    subject { repository.find(id) }
+
+    let!(:category) { create(:category) }
+
+    context "when category exists" do
+      let(:id) { category[T.id] }
+
+      it "returns the category" do
+        expect(subject).to eq(category)
+      end
+    end
+
+    context "when category does not exist" do
+      let(:id) { SecureRandom.uuid }
+
+      it "raises an exception" do
+        expect { subject }.to raise_error(StopIteration, "iteration reached an end")
+      end
     end
   end
 end
