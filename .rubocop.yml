@@ -39,3 +39,9 @@ Style/SymbolArray:
 
 Style/WordArray:
   EnforcedStyle: brackets
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/MultipleExpectations:
+  Max: 5

@@ -62,5 +62,7 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include_context(Async::RSpec::Reactor)
-  config.include_context(Async::RSpec::Leaks)
+
+  config.include_context(Grumlin::Test::RSpec::GremlinContext)
+  config.include_context(Grumlin::Test::RSpec::DBCleanerContext)
 end
