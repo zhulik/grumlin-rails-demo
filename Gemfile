@@ -12,8 +12,11 @@ gem "grumlin"
 
 gem "bootsnap", require: false
 
-group :development, :test do
+group :test do
   gem "async-rspec"
+end
+
+group :development, :test do
   gem "dead_end"
   gem "debug", platforms: [:mri, :mingw, :x64_mingw]
   gem "rspec-rails"
@@ -25,4 +28,5 @@ group :development do
   gem "rubocop-performance", require: false
   gem "rubocop-rails", require: false
   gem "rubocop-rspec", require: false
+  gem "solargraph", require: false
 end
