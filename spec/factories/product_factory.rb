@@ -6,5 +6,9 @@ FactoryBot.define do
 
     sequence(:name) { "Product#{_1}" }
     sequence(:price) { Random.rand(100...200) }
+
+    to_create do |instance|
+      instance.merge!(ProductRepository.new.add(**instance.without(T.label, :created_at)))
+    end
   end
 end

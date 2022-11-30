@@ -5,5 +5,9 @@ FactoryBot.define do
     label { :category }
 
     sequence(:name) { "Category#{_1}" }
+
+    to_create do |instance|
+      instance.merge!(CategoryRepository.new.add(**instance.without(T.label, :created_at)))
+    end
   end
 end

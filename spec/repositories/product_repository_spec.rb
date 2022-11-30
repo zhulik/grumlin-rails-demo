@@ -19,7 +19,7 @@ RSpec.describe ProductRepository do
 
         it "creates belongs_to edges" do
           expect { subject }.to change { g.E.hasLabel(:belongs_to).count.next }.by 2
-          expect(g.V.hasId(subject[T.id]).out(:belongs_to).elementMap.toList).to match_array(categories)
+          expect(g.V.hasId(subject[T.id]).out(:belongs_to).id.toList).to match_array(categories.pluck(T.id))
         end
 
         it "returns created product" do
@@ -27,7 +27,7 @@ RSpec.describe ProductRepository do
             T.label => "product",
             name: "Some product",
             price: 123,
-            categories:
+            categories: categories.map { _1.except(:product_count) }
           )
           expect(subject[T.id]).to be_a(String)
           expect(subject[:created_at]).to be_a(Numeric)

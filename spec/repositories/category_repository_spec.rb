@@ -47,7 +47,7 @@ RSpec.describe CategoryRepository do
     let!(:categories) { create_list(:category, 2) }
 
     it "returns all categories" do
-      expect(subject).to match_array(categories.map { _1.merge(product_count: 0) })
+      expect(subject).to match_array(categories)
     end
   end
 
@@ -60,7 +60,7 @@ RSpec.describe CategoryRepository do
       let(:id) { category[T.id] }
 
       it "returns the category" do
-        expect(subject).to eq(category.merge(product_count: 0))
+        expect(subject).to eq(category)
       end
     end
 
