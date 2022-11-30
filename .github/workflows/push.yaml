@@ -1,0 +1,44 @@
+name: Push
+
+on:
+  push:
+  pull_request:
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run rubocop
+        run: bundle exec rubocop
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run gremlin server
+        run: docker-compose up -d --build gremlin_server
+
+      - name: Run tests
+        env:
+          DATABASE_URL: "ws://localhost:8182/gremlin"
+          RAILS_ENV: test
+        run: bundle exec rspec
