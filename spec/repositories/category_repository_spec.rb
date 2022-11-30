@@ -59,8 +59,20 @@ RSpec.describe CategoryRepository do
     context "when category exists" do
       let(:id) { category[T.id] }
 
-      it "returns the category" do
-        expect(subject).to eq(category)
+      context "when it does not have any products" do
+        it "returns the category" do
+          expect(subject).to eq(category)
+        end
+      end
+
+      context "when it has products" do
+        before do
+          create_list(:product, 2, categories: [category])
+        end
+
+        it "returns the category" do
+          expect(subject).to eq(category.merge(product_count: 2))
+        end
       end
     end
 
