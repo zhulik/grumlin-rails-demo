@@ -19,7 +19,7 @@ RSpec.describe ProductRepository do
 
         it "creates belongs_to edges" do
           expect { subject }.to change { g.E.hasLabel(:belongs_to).count.next }.by 2
-          expect(g.V.hasId(subject[T.id]).out(:belongs_to).elementMap.toList).to match_array(categories)
+          expect(g.V.hasId(subject[T.id]).out(:belongs_to).id.toList).to match_array(categories.pluck(T.id))
         end
 
         it "returns created product" do
@@ -27,7 +27,7 @@ RSpec.describe ProductRepository do
             T.label => "product",
             name: "Some product",
             price: 123,
-            categories:
+            categories: categories.map { _1.except(:product_count) }
           )
           expect(subject[T.id]).to be_a(String)
           expect(subject[:created_at]).to be_a(Numeric)
@@ -82,7 +82,8 @@ RSpec.describe ProductRepository do
 
     context "when product exists" do
       let(:categories) { create_list(:category, 2) }
-      let!(:product) { repository.add(name: "Some product", price: 123, category_ids: categories.pluck(T.id)) }
+      let!(:product) { create(:product, categories:) }
+
       let(:id) { product[T.id] }
 
       it "returns the product" do
@@ -103,11 +104,11 @@ RSpec.describe ProductRepository do
     subject { repository.all(category_ids:) }
 
     let!(:categories) { create_list(:category, 4) }
-    let!(:product1) { repository.add(name: "Product1", price: 100, category_ids: [categories.dig(0, T.id)]) }
-    let!(:product2) { repository.add(name: "Product2", price: 100, category_ids: [categories.dig(0, T.id)]) }
-    let!(:product3) { repository.add(name: "Product3", price: 100, category_ids: [categories.dig(1, T.id)]) }
-    let!(:product4) { repository.add(name: "Product4", price: 100, category_ids: [categories.dig(1, T.id)]) }
-    let!(:product5) { repository.add(name: "Product5", price: 100, category_ids: [categories.dig(2, T.id)]) }
+    let!(:product1) { create(:product, categories: [categories[0]]) }
+    let!(:product2) { create(:product, categories: [categories[0]]) }
+    let!(:product3) { create(:product, categories: [categories[1]]) }
+    let!(:product4) { create(:product, categories: [categories[1]]) }
+    let!(:product5) { create(:product, categories: [categories[2]]) }
 
     context "when no category ids is passed" do
       let(:category_ids) { [] }

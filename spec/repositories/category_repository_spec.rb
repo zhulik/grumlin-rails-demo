@@ -13,7 +13,8 @@ RSpec.describe CategoryRepository do
     it "returns created category" do
       expect(subject.except(T.id, :created_at)).to eq(
         T.label => "category",
-        name: "Some category"
+        name: "Some category",
+        product_count: 0
       )
       expect(subject[T.id]).to be_a(String)
       expect(subject[:created_at]).to be_a(Numeric)
@@ -43,7 +44,7 @@ RSpec.describe CategoryRepository do
   describe "#all" do
     subject { repository.all }
 
-    let!(:categories) { create_list(:category, 5) }
+    let!(:categories) { create_list(:category, 2) }
 
     it "returns all categories" do
       expect(subject).to match_array(categories)
@@ -58,8 +59,20 @@ RSpec.describe CategoryRepository do
     context "when category exists" do
       let(:id) { category[T.id] }
 
-      it "returns the category" do
-        expect(subject).to eq(category)
+      context "when it does not have any products" do
+        it "returns the category" do
+          expect(subject).to eq(category)
+        end
+      end
+
+      context "when it has products" do
+        before do
+          create_list(:product, 2, categories: [category])
+        end
+
+        it "returns the category" do
+          expect(subject).to eq(category.merge(product_count: 2))
+        end
       end
     end
 
