@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe ProductRepository do
   let(:repository) { described_class.new }
 
@@ -97,4 +98,68 @@ RSpec.describe ProductRepository do
       end
     end
   end
+
+  describe "#all" do
+    subject { repository.all(category_ids:) }
+
+    let!(:categories) { create_list(:category, 4) }
+    let!(:product1) { repository.add(name: "Product1", price: 100, category_ids: [categories.dig(0, T.id)]) }
+    let!(:product2) { repository.add(name: "Product2", price: 100, category_ids: [categories.dig(0, T.id)]) }
+    let!(:product3) { repository.add(name: "Product3", price: 100, category_ids: [categories.dig(1, T.id)]) }
+    let!(:product4) { repository.add(name: "Product4", price: 100, category_ids: [categories.dig(1, T.id)]) }
+    let!(:product5) { repository.add(name: "Product5", price: 100, category_ids: [categories.dig(2, T.id)]) }
+
+    context "when no category ids is passed" do
+      let(:category_ids) { [] }
+
+      it "returns all products" do
+        expect(subject).to match_array([product1, product2, product3, product4, product5])
+      end
+    end
+
+    context "when one category id is passed" do
+      context "when it's empty" do
+        let(:category_ids) { [categories.dig(3, T.id)] }
+
+        it "returns an empty list" do
+          expect(subject).to be_empty
+        end
+      end
+
+      context "when it exists" do
+        let(:category_ids) { [categories.dig(0, T.id)] }
+
+        it "returns products belonging to it" do
+          expect(subject).to match_array([product1, product2])
+        end
+      end
+
+      context "when it does not exist" do
+        let(:category_ids) { [SecureRandom.uuid] }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(Grumlin::FailStepError, "Some vertices were not found")
+        end
+      end
+    end
+
+    context "when multiple category id is passed" do
+      context "when all of them exists" do
+        let(:category_ids) { categories[0..1].pluck(T.id) }
+
+        it "returns products belonging to all of them" do
+          expect(subject).to match_array([product1, product2, product3, product4])
+        end
+      end
+
+      context "when some of the do not exist" do
+        let(:category_ids) { [categories.dig(0, T.id), SecureRandom.uuid] }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(Grumlin::FailStepError, "Some vertices were not found")
+        end
+      end
+    end
+  end
 end
+# rubocop:enable RSpec/MultipleMemoizedHelpers

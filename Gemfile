@@ -8,7 +8,7 @@ ruby "3.1.2"
 gem "rails", "~> 7.0.4"
 
 gem "falcon"
-gem "grumlin", path: "../grumlin"
+gem "grumlin"
 
 gem "bootsnap", require: false
 

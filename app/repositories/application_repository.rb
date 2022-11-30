@@ -25,4 +25,24 @@ class ApplicationRepository
       .group.by(Column.keys).by(__.select(Column.values))
     )
   end
+
+  shortcut :products do
+    hasLabel(:product)
+  end
+
+  shortcut :categories do
+    hasLabel(:category)
+  end
+
+  shortcut :allV do |*ids|
+    self.V(ids)
+        .fold
+        .coalesce(
+          __.filter(
+            __.count(Scope.local).is(ids.size)
+          ),
+          __.fail("Some vertices were not found")
+        )
+        .unfold
+  end
 end
