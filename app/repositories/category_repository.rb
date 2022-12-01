@@ -31,9 +31,9 @@ class CategoryRepository < ApplicationRepository
      .withProductCount
   end
 
-  query(:drop, return_mode: :none) do |id|
+  query(:drop, return_mode: :single) do |id|
     g.V.categories
      .hasId(id)
-     .drop
+     .sideEffect(__.drop)
   end
 end

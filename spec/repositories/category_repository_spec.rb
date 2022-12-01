@@ -29,15 +29,37 @@ RSpec.describe CategoryRepository do
     it "updates category" do
       expect { subject }.to change { g.V(category[T.id]).elementMap.next[:name] }.from("Old name").to("New name")
     end
+
+    it "returns created category" do
+      expect(subject.except(T.id, :created_at)).to eq(
+        T.label => "category",
+        name: "New name",
+        product_count: 0
+      )
+      expect(subject[T.id]).to be_a(String)
+      expect(subject[:created_at]).to be_a(Numeric)
+    end
   end
 
   describe "#drop" do
-    subject { repository.drop(category[T.id]) }
+    subject { repository.drop(id) }
 
     let!(:category) { create(:category) }
 
-    it "drops category" do
-      expect { subject }.to change { g.V.hasLabel(:category).count.next }.by(-1)
+    context "when category exists" do
+      let(:id) { category[T.id] }
+
+      it "drops category" do
+        expect { subject }.to change { g.V.hasLabel(:category).count.next }.by(-1)
+      end
+    end
+
+    context "when category does not exists" do
+      let(:id) { SecureRandom.uuid }
+
+      it "raises an exception" do
+        expect { subject }.to raise_error(StopIteration, "iteration reached an end")
+      end
     end
   end
 

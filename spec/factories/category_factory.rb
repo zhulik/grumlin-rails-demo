@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :category, parent: :vertex do
-    label { :category }
+    label { "category" }
 
     sequence(:name) { "Category#{_1}" }
 
