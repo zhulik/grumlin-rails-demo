@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 RSpec.describe "Categories" do
   let(:categories) { build_list(:category, 2).map(&:stringify_keys) }
 
