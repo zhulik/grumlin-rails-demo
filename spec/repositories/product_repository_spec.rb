@@ -68,12 +68,24 @@ RSpec.describe ProductRepository do
   end
 
   describe "#drop" do
-    subject { repository.drop(product[T.id]) }
+    subject { repository.drop(id) }
 
     let!(:product) { create(:product) }
 
-    it "drops product" do
-      expect { subject }.to change { g.V.hasLabel(:product).count.next }.by(-1)
+    context "when product exists" do
+      let(:id) { product[T.id] }
+
+      it "drops product" do
+        expect { subject }.to change { g.V.hasLabel(:product).count.next }.by(-1)
+      end
+    end
+
+    context "when product does not exist" do
+      let(:id) { SecureRandom.uuid }
+
+      it "raises an exception" do
+        expect { subject }.to raise_error(StopIteration, "iteration reached an end")
+      end
     end
   end
 
@@ -198,6 +210,18 @@ RSpec.describe ProductRepository do
         context "when passing an empty categories list" do
           it "updates the product and removes it's categories" do
             expect { subject }.to change { repository.find(id).except(:created_at) }.from(product.except(:created_at)).to(
+              {
+                T.label => "product",
+                T.id => product[T.id],
+                name: "New name",
+                categories: [],
+                price: "12345"
+              }
+            )
+          end
+
+          it "returns updated product" do
+            expect(subject.except(:created_at)).to eq(
               {
                 T.label => "product",
                 T.id => product[T.id],

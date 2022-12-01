@@ -50,9 +50,9 @@ class ProductRepository < ApplicationRepository
      .withCategories
   end
 
-  query(:drop, return_mode: :none) do |id|
+  query(:drop, return_mode: :single) do |id|
     g.V.products
      .hasId(id)
-     .drop
+     .sideEffect(__.drop)
   end
 end
