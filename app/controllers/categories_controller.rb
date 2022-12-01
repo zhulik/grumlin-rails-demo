@@ -3,10 +3,6 @@
 class CategoriesController < ApplicationController
   REPOSITORY = CategoryRepository.new
 
-  rescue_from StopIteration do
-    render json: { error: "not_found" }, status: :not_found
-  end
-
   def index
     render json: REPOSITORY.all
   end
