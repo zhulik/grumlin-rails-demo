@@ -13,14 +13,14 @@ gem "grumlin"
 gem "bootsnap", require: false
 
 group :test do
-  gem "async-rspec"
-  gem "factory_bot_rails"
   gem "simplecov", require: false
 end
 
 group :development, :test do
+  gem "async-rspec"
   gem "dead_end"
   gem "debug", platforms: [:mri, :mingw, :x64_mingw]
+  gem "factory_bot_rails"
   gem "rspec-rails"
 end
 
