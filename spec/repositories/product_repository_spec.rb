@@ -162,5 +162,79 @@ RSpec.describe ProductRepository do
       end
     end
   end
+
+  describe "#update" do
+    subject { repository.update(id, **params) }
+
+    let(:product) { create(:product) }
+
+    let(:params) { { name: "New name", price: "12345", category_ids: } }
+    let(:category_ids) { [] }
+
+    context "when product exists" do
+      let(:id) { product[T.id] }
+
+      context "when product didn't have categories" do
+        let(:category) { create(:category) }
+        let(:category_ids) { [category[T.id]] }
+
+        it "updates the product and assigns categories" do
+          expect { subject }.to change { repository.find(id).except(:created_at) }.from(product.except(:created_at)).to(
+            {
+              T.label => "product",
+              T.id => product[T.id],
+              name: "New name",
+              categories: [category.except(:product_count)],
+              price: "12345"
+            }
+          )
+        end
+      end
+
+      context "when product had categories" do
+        let(:category) { create(:category) }
+        let(:product) { create(:product, categories: [category]) }
+
+        context "when passing an empty categories list" do
+          it "updates the product and removes it's categories" do
+            expect { subject }.to change { repository.find(id).except(:created_at) }.from(product.except(:created_at)).to(
+              {
+                T.label => "product",
+                T.id => product[T.id],
+                name: "New name",
+                categories: [],
+                price: "12345"
+              }
+            )
+          end
+        end
+
+        context "when passing a non-empty category list" do
+          let(:another_category) { create(:category) }
+          let(:category_ids) { [another_category[T.id]] }
+
+          it "updates the product and replaces the categories" do
+            expect { subject }.to change { repository.find(id).except(:created_at) }.from(product.except(:created_at)).to(
+              {
+                T.label => "product",
+                T.id => product[T.id],
+                name: "New name",
+                categories: [another_category.except(:product_count)],
+                price: "12345"
+              }
+            )
+          end
+        end
+      end
+    end
+
+    context "when product does not exist" do
+      let(:id) { SecureRandom.uuid }
+
+      it "raises an exception" do
+        expect { subject }.to raise_error(StopIteration, "iteration reached an end")
+      end
+    end
+  end
 end
 # rubocop:enable RSpec/MultipleMemoizedHelpers

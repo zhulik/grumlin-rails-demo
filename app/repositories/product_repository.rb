@@ -7,6 +7,19 @@ class ProductRepository < ApplicationRepository
     )
   end
 
+  shortcut :assignCategories do |ids|
+    ids.reduce(self) do |t, id|
+      t.addE(:belongs_to)
+       .from(:product)
+       .to(__.V(id))
+    end
+  end
+
+  shortcut :replaceCategories do |ids|
+    sideEffect(__.outE(:belongs_to).drop)
+      .assignCategories(ids)
+  end
+
   query(:all) do |category_ids: []|
     next g.V.products.withCategories if category_ids.empty?
 
@@ -20,23 +33,22 @@ class ProductRepository < ApplicationRepository
   end
 
   query(:add, return_mode: :single) do |name:, price:, category_ids: []|
-    t = g.addV(:product)
-         .props(name:, price:)
-         .as(:product)
-
-    category_ids.reduce(t) do |tt, id|
-      tt.addE(:belongs_to)
-        .from(:product)
-        .to(__.V(id))
-    end.select(:product).withCategories
+    g.addV(:product)
+     .props(name:, price:)
+     .as(:product)
+     .assignCategories(category_ids)
+     .select(:product).withCategories
   end
 
-  # query(:update, return_mode: :single) do |id, name:, price:, categories: []|
-  #   # g.V.products
-  #   #  .hasId(id)
-  #   #  .props(name:, price:)
-  #   #  .elementMap
-  # end
+  query(:update, return_mode: :single) do |id, name:, price:, category_ids: []|
+    g.V.products
+     .hasId(id)
+     .as(:product)
+     .replaceCategories(category_ids)
+     .select(:product)
+     .props(name:, price:)
+     .withCategories
+  end
 
   query(:drop, return_mode: :none) do |id|
     g.V.products
